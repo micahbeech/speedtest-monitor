@@ -1,7 +1,7 @@
-from pathlib import Path
+import mimetypes
 from base64 import urlsafe_b64encode
 from email.message import EmailMessage
-import mimetypes
+from pathlib import Path
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -49,6 +49,8 @@ def getCredentials() -> Credentials:
 def send(to: str, subject: str, text: str = None, html: str = None, attachments: list = []):
     '''
     Sends an email to the specified address with subject and body from the authorized email address.
+
+    One of text or html must be present. If both are present, html is used and text is ignored.
     '''
     service = build('gmail', 'v1', credentials=getCredentials())
     user = service.users().getProfile(userId='me').execute()

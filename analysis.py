@@ -1,9 +1,11 @@
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from dataclasses import dataclass
-import pandas as pd
 from uuid import uuid4
+
 import matplotlib.pyplot as plt
+import pandas as pd
+
 
 @dataclass
 class SpeedData:

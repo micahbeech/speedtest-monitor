@@ -1,6 +1,6 @@
-from pathlib import Path
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
+from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
 

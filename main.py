@@ -1,9 +1,10 @@
 from argparse import ArgumentParser
 
 import gmail
-from config import parseConfig
 from analysis import SpeedData, analyzeData
+from config import parseConfig
 from speedtest import runSpeedtest
+
 
 def notify(data: SpeedData, email: str):
     startDate = data.startDate.date()

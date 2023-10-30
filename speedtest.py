@@ -1,7 +1,7 @@
-import subprocess
-import json
-from pathlib import Path
 import csv
+import json
+import subprocess
+from pathlib import Path
 
 BPS_IN_MBPS = 125000
 
