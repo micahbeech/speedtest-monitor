@@ -2,6 +2,7 @@ import mimetypes
 from base64 import urlsafe_b64encode
 from email.message import EmailMessage
 from pathlib import Path
+from typing import List
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -41,12 +42,12 @@ def getCredentials() -> Credentials:
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIAL_FILE, SCOPES)
             credentials = flow.run_local_server(port=0, authorization_prompt_message=None)
         
-        with open(TOKEN_FILE, 'w') as token:
+        with TOKEN_FILE.open('w') as token:
             token.write(credentials.to_json())
 
     return credentials
 
-def send(to: str, subject: str, html: str, attachments: list = []):
+def send(to: str, subject: str, html: str, attachments: List[Path] = []):
     '''
     Sends an email to the specified address with subject and body from the authorized email address.
     '''
@@ -65,7 +66,7 @@ def send(to: str, subject: str, html: str, attachments: list = []):
         type_subtype, _ = mimetypes.guess_type(attachment)
         maintype, subtype = type_subtype.split('/')
 
-        with open(attachment, 'rb') as fp:
+        with attachment.open('rb') as fp:
             attachment_data = fp.read()
         
         message.add_attachment(attachment_data, maintype, subtype)

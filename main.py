@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from time import sleep
+from pathlib import Path
 
 import gmail
 from analysis import SpeedData, analyzeData
@@ -38,41 +38,45 @@ def notify(data: SpeedData, email: str):
 
     gmail.send(email, subject, generateSummaryHTML(data), attachments=[data.plotFile])
 
-    data.plotFile.unlink()
-
-def saveLocally(data: SpeedData):
-    outfile = data.plotFile.with_suffix('.html')
-
+def saveLocally(data: SpeedData, outfile: Path):
     html = generateSummaryHTML(data)
     html += f'<img src="{data.plotFile}"/>'
 
     with outfile.open('w') as file:
         file.write(html)
 
-    return outfile
 
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('command', choices=['test', 'save', 'mail'])
+    parser = ArgumentParser(prog='Speedtest Monitor')
+    parser.add_argument('command', choices=['test', 'save', 'mail'], help='Command to run')
+    parser.add_argument(
+        '-o', '--open',
+        action='store_true',
+        help='When command is "save", attempt to open the results file using the default program.',
+    )
 
     config = parseConfig()
     args = parser.parse_args()
 
     match args.command:
         case 'test':
-            runSpeedtest(config.resultsFile)
+            runSpeedtest(config.resultsCsvPath)
 
         case 'save':
-            data = analyzeData(config.resultsFile)
-            outfile = saveLocally(data)
+            if not config.summaryHtmlPath.is_absolute():
+                raise ValueError('Please input an absolute path for the summaryHtmlPath to disambiguate file location!')
 
-            openFile(outfile)
+            data = analyzeData(config.resultsCsvPath)
+            saveLocally(data, config.summaryHtmlPath)
 
-            sleep(1) # so browser opens files before they get deleted
-
-            data.plotFile.unlink()
-            outfile.unlink()
+            if args.open:
+                openFile(config.summaryHtmlPath)
 
         case 'mail':
-            data = analyzeData(config.resultsFile)
+            if not config.deliveryEmail:
+                raise ValueError('Configuration missing address for email delivery!')
+            
+            data = analyzeData(config.resultsCsvPath)
             notify(data, config.deliveryEmail)
+
+            data.plotFile.unlink()

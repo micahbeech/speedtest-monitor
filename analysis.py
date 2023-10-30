@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from pprint import pprint
-from uuid import uuid4
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -30,7 +29,7 @@ def generateGraphs(data: pd.DataFrame) -> Path:
     fig.autofmt_xdate(rotation=45)
     fig.subplots_adjust(bottom=0.25, left=0.25)
 
-    imagePath = Path(__file__).parent / f'results_{uuid4()}.png'
+    imagePath = Path(__file__).parent / f'summary.png'
     plt.savefig(imagePath)
 
     return imagePath
@@ -58,8 +57,8 @@ def analyzeData(filepath: Path) -> SpeedData:
 if __name__ == '__main__':
     config = parseConfig()
 
-    print(f'Analyzing {config.resultsFile}:')
-    data = analyzeData(config.resultsFile)
+    print(f'Analyzing {config.resultsCsvPath}:')
+    data = analyzeData(config.resultsCsvPath)
     pprint(data)
 
     data.plotFile.unlink()
