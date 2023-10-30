@@ -18,7 +18,7 @@ SCOPES = [
     'https://www.googleapis.com/auth/gmail.send',
 ]
 
-SCRIPT_DIR = Path(__file__).parent.resolve()
+SCRIPT_DIR = Path(__file__).parent
 TOKEN_FILE = SCRIPT_DIR / 'gmail-token.json'
 CREDENTIAL_FILE = SCRIPT_DIR / 'gmail-credentials.json'
 
@@ -32,7 +32,7 @@ def getCredentials() -> Credentials:
     credentials = None
 
     if TOKEN_FILE.is_file():
-        credentials = Credentials.from_authorized_user_file(TOKEN_FILE.resolve(), SCOPES)
+        credentials = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
 
     if not credentials or not credentials.valid:
         if credentials and credentials.expired and credentials.refresh_token:
@@ -46,7 +46,7 @@ def getCredentials() -> Credentials:
 
     return credentials
 
-def sendEmail(to: str, subject: str, body: str, bodyType: str = None, attachments: list = []):
+def send(to: str, subject: str, text: str = None, html: str = None, attachments: list = []):
     '''
     Sends an email to the specified address with subject and body from the authorized email address.
     '''
@@ -55,10 +55,11 @@ def sendEmail(to: str, subject: str, body: str, bodyType: str = None, attachment
 
     message = EmailMessage()
 
-    if bodyType:
-        message.set_content(body, bodyType)
-    else:
-        message.set_content(body)
+    if text:
+        message.set_content(text)
+
+    if html:
+        message.set_content(html, 'html')
 
     message['To'] = to
     message['From'] = user['emailAddress']
