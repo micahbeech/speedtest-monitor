@@ -3,14 +3,14 @@ import json
 import subprocess
 from pathlib import Path
 
+from config import parseConfig
+
 BPS_IN_MBPS = 125000
 
-def exec(command: str) -> str:
-    return subprocess.run(command, shell=True, check=True, capture_output=True, text=True).stdout
-
 def runSpeedtest(filename: Path):
-    response = exec('speedtest --accept-license --accept-gdpr --format json')
-    data = json.loads(response)
+    command = 'speedtest --accept-license --accept-gdpr --format json'
+    response = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+    data = json.loads(response.stdout)
 
     results = {
         'time': data['timestamp'],
@@ -33,7 +33,7 @@ def runSpeedtest(filename: Path):
 if __name__ == '__main__':
     print('Running speedtest...')
 
-    filename = 'results.csv'
-    runSpeedtest(filename)
+    config = parseConfig()
+    runSpeedtest(config.resultsFile)
 
-    print(f'Results written to {filename}')
+    print(f'Results written to {config.resultsFile}')

@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from pprint import pprint
 from uuid import uuid4
 
 import matplotlib.pyplot as plt
 import pandas as pd
+
+from config import parseConfig
 
 
 @dataclass
@@ -32,8 +35,8 @@ def generateGraphs(data: pd.DataFrame) -> Path:
 
     return imagePath
 
-def analyzeData(filename: Path) -> SpeedData:
-    data = pd.read_csv(filename)
+def analyzeData(filepath: Path) -> SpeedData:
+    data = pd.read_csv(filepath)
 
     plotFile = generateGraphs(data)
 
@@ -53,10 +56,10 @@ def analyzeData(filename: Path) -> SpeedData:
     )
 
 if __name__ == '__main__':
-    filename = input('Enter path to results file: ')
-    results = analyzeData(filename)
-    print(results)
+    config = parseConfig()
 
-    deleteFile = input('Delete result image? (y/n) ')
-    if deleteFile.lower() == 'y':
-        results.plotFile.unlink()
+    print(f'Analyzing {config.resultsFile}:')
+    data = analyzeData(config.resultsFile)
+    pprint(data)
+
+    data.plotFile.unlink()

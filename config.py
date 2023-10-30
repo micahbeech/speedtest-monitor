@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from pprint import pprint
 
 SCRIPT_DIR = Path(__file__).parent
 
@@ -21,4 +22,4 @@ def parseConfig() -> Config:
     return config
 
 if __name__ == '__main__':
-    print(parseConfig())
+    pprint(parseConfig())

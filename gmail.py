@@ -46,22 +46,16 @@ def getCredentials() -> Credentials:
 
     return credentials
 
-def send(to: str, subject: str, text: str = None, html: str = None, attachments: list = []):
+def send(to: str, subject: str, html: str, attachments: list = []):
     '''
     Sends an email to the specified address with subject and body from the authorized email address.
-
-    One of text or html must be present. If both are present, html is used and text is ignored.
     '''
     service = build('gmail', 'v1', credentials=getCredentials())
     user = service.users().getProfile(userId='me').execute()
 
     message = EmailMessage()
 
-    if text:
-        message.set_content(text)
-
-    if html:
-        message.set_content(html, 'html')
+    message.set_content(html, 'html')
 
     message['To'] = to
     message['From'] = user['emailAddress']
