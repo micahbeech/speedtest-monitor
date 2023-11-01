@@ -34,12 +34,12 @@ cd speedtest-monitor
 
 2. Install the Python dependencies
     ```sh
-    pip install -q -r requirements.txt
+    pip install -r requirements.txt
     ```
 
 3. Install the Speedtest CLI https://www.speedtest.net/apps/cli
 
-4. Create a configuration file `config.json`
+4. Create a configuration file `config.json` with `resultsCsvPath` (the csv file where speedtest results are stored) and `reportDir` (the directory in which to place summary reports).
     ```json
     {
         "resultsCsvPath": "/path/to/results.csv",
