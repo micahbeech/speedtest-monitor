@@ -7,4 +7,4 @@ pip install -q -r requirements.txt
 echo "Done."
 echo
 
-python3 setup.py 
+python setup.py 

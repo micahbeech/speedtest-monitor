@@ -58,7 +58,7 @@ def installCronJob(humanAction: str, machineAction: str, defaultFrequency: int, 
     print(f'How often (in {unit}) should {humanAction}?')
     frequency = input(f'Press enter for default ({defaultFrequency}): ') or defaultFrequency
 
-    command = f'python3 {MAIN_FILE} {machineAction}'
+    command = f'python {MAIN_FILE} {machineAction}'
     CRON.remove_all(command=command)
     job = CRON.new(command=command)
     getattr(job.every(frequency), unit)()

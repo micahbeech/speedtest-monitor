@@ -7,7 +7,7 @@ SCRIPT_DIR = Path(__file__).parent
 
 @dataclass
 class Config:
-    deliveryEmail: str
+    deliveryEmail: str | None
     resultsCsvPath: Path
     reportDir: Path
 
@@ -15,13 +15,13 @@ def parseConfig() -> Config:
     configFile = SCRIPT_DIR / 'config.json'
 
     with configFile.open() as file:
-        config: Config = json.load(file, object_hook=lambda x : Config(*x.values()))
-    
-    assert config.resultsCsvPath
-    assert config.reportDir
+        configDict = json.load(file)
 
-    config.resultsCsvPath = Path(config.resultsCsvPath)
-    config.reportDir = Path(config.reportDir)
+    config = Config(
+        resultsCsvPath=Path(configDict['resultsCsvPath']),
+        reportDir=Path(configDict['reportDir']),
+        deliveryEmail=configDict.get('deliveryEmail')
+    )
 
     assert config.resultsCsvPath.is_absolute()
     assert config.reportDir.is_absolute()
