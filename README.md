@@ -2,6 +2,8 @@
 
 Track your internet speed and visualize the results.
 
+<img width="600" alt="Sample" src="https://github.com/micahbeech/speedtest-monitor/assets/47065407/8dcddb39-0148-47b0-8b57-1102f8f4a37f">
+
 ## Installation
 
 ### Prerequisites
@@ -11,8 +13,8 @@ Track your internet speed and visualize the results.
 ### Automatic Setup (recommended)
 
 ```sh
-git clone <REPO>
-cd REPO
+git clone git@github.com:micahbeech/speedtest-monitor.git
+cd speedtest-monitor
 ./setup.sh
 ```
 
@@ -26,8 +28,8 @@ cd REPO
 
 1. Clone the source code
     ```sh
-    git clone <REPO>
-    cd REPO
+    git clone git@github.com:micahbeech/speedtest-monitor.git
+    cd speedtest-monitor
     ```
 
 2. Install the Python dependencies
