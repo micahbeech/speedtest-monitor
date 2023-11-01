@@ -9,19 +9,23 @@ SCRIPT_DIR = Path(__file__).parent
 class Config:
     deliveryEmail: str
     resultsCsvPath: Path
-    summaryHtmlPath: Path
+    reportDir: Path
 
 def parseConfig() -> Config:
     configFile = SCRIPT_DIR / 'config.json'
 
     with configFile.open() as file:
         config: Config = json.load(file, object_hook=lambda x : Config(*x.values()))
-
-    if not config.resultsCsvPath:
-        raise ValueError('Missing required value resultsCsvPath!')
+    
+    assert config.resultsCsvPath
+    assert config.reportDir
 
     config.resultsCsvPath = Path(config.resultsCsvPath)
-    config.summaryHtmlPath = Path(config.summaryHtmlPath)
+    config.reportDir = Path(config.reportDir)
+
+    assert config.resultsCsvPath.is_absolute()
+    assert config.reportDir.is_absolute()
+    assert config.reportDir.is_dir()
 
     return config
 

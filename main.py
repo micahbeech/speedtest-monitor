@@ -1,54 +1,64 @@
 from argparse import ArgumentParser
 from pathlib import Path
+from uuid import uuid4
 
 import gmail
-from analysis import SpeedData, analyzeData
-from config import parseConfig
+from analysis import analyzeData
+from config import Config, parseConfig
 from speedtest import runSpeedtest
 from util import openFile
 
 
-def generateSummaryHTML(data: SpeedData) -> str:
-    return f'''
-    <table>
-        <tbody><tr>
-            <td>Average download speed:</td>
-            <td>{data.averageDownloadBandwidth:.2f} Mbps</td>
-        </tr>
-        <tr>
-            <td>Average upload speed:</td>
-            <td>{data.averageUploadBandwidth:.2f} Mbps</td>
-        </tr>
-        <tr>
-            <td>Average ping:</td>
-            <td>{data.averagePing:.2f} ms</td>
-        </tr>
-        </tbody>
-    </table>
+def generateReport(config: Config) -> Path:
+    reportId = uuid4()
 
-    <br/>
-    '''
+    basePath = config.reportDir / f'report_{reportId}'
+    imagePath = basePath.with_suffix('.png')
+    reportPath = basePath.with_suffix('.html')
 
-def notify(data: SpeedData, email: str):
-    startDate = data.startDate.date()
-    endDate = data.endDate.date()
+    data = analyzeData(config.resultsCsvPath, imagePath)
 
-    subject = f'Internet Speed Summary for {startDate}'
-    subject += '' if startDate == endDate else f' to {endDate}'
+    baseHtml = f'''
+        <table>
+            <tbody><tr>
+                <td>Average download speed:</td>
+                <td>{data.averageDownloadBandwidth:.2f} Mbps</td>
+            </tr>
+            <tr>
+                <td>Average upload speed:</td>
+                <td>{data.averageUploadBandwidth:.2f} Mbps</td>
+            </tr>
+            <tr>
+                <td>Average ping:</td>
+                <td>{data.averagePing:.2f} ms</td>
+            </tr>
+            </tbody>
+        </table>
 
-    gmail.send(email, subject, generateSummaryHTML(data), attachments=[data.plotFile])
+        <br/>
+        '''
 
-def saveLocally(data: SpeedData, outfile: Path):
-    html = generateSummaryHTML(data)
-    html += f'<img src="{data.plotFile}"/>'
+    with reportPath.open('w') as file:
+        file.write(baseHtml + f'<img src="{imagePath}"/>')
 
-    with outfile.open('w') as file:
-        file.write(html)
+    if config.deliveryEmail:
+        startDate = data.startDate.date()
+        endDate = data.endDate.date()
+
+        subject = f'Internet Speed Summary for {startDate}'
+        subject += '' if startDate == endDate else f' to {endDate}'
+
+        gmail.send(config.deliveryEmail, subject, baseHtml, attachments=[imagePath])
+
+    newPath = config.reportDir / f'{config.resultsCsvPath.stem}_{reportId}{config.resultsCsvPath.suffix}'
+    config.resultsCsvPath.rename(newPath)
+
+    return reportPath
 
 
 if __name__ == '__main__':
     parser = ArgumentParser(prog='Speedtest Monitor')
-    parser.add_argument('command', choices=['test', 'save', 'mail'], help='Command to run')
+    parser.add_argument('command', choices=['test', 'report'], help='Command to run')
     parser.add_argument(
         '-o', '--open',
         action='store_true',
@@ -62,21 +72,7 @@ if __name__ == '__main__':
         case 'test':
             runSpeedtest(config.resultsCsvPath)
 
-        case 'save':
-            if not config.summaryHtmlPath.is_absolute():
-                raise ValueError('Please input an absolute path for the summaryHtmlPath to disambiguate file location!')
-
-            data = analyzeData(config.resultsCsvPath)
-            saveLocally(data, config.summaryHtmlPath)
-
+        case 'report':
+            path = generateReport(config)
             if args.open:
-                openFile(config.summaryHtmlPath)
-
-        case 'mail':
-            if not config.deliveryEmail:
-                raise ValueError('Configuration missing address for email delivery!')
-            
-            data = analyzeData(config.resultsCsvPath)
-            notify(data, config.deliveryEmail)
-
-            data.plotFile.unlink()
+                openFile(path)

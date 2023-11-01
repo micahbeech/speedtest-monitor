@@ -16,9 +16,8 @@ class SpeedData:
     averagePing: float
     startDate: datetime
     endDate: datetime
-    plotFile: Path
 
-def generateGraphs(data: pd.DataFrame) -> Path:
+def generateGraphs(data: pd.DataFrame, plotPath: Path):
     axes = data.plot.line(x='time', subplots=[('down', 'up')], figsize=(6,8), grid=True)
 
     axes[0].set_ylabel('Bandwidth (Mbps)')
@@ -29,15 +28,12 @@ def generateGraphs(data: pd.DataFrame) -> Path:
     fig.autofmt_xdate(rotation=45)
     fig.subplots_adjust(bottom=0.25, left=0.25)
 
-    imagePath = Path(__file__).parent / f'summary.png'
-    plt.savefig(imagePath)
+    plt.savefig(plotPath)
 
-    return imagePath
+def analyzeData(csvPath: Path, plotPath: Path) -> SpeedData:
+    data = pd.read_csv(csvPath)
 
-def analyzeData(filepath: Path) -> SpeedData:
-    data = pd.read_csv(filepath)
-
-    plotFile = generateGraphs(data)
+    generateGraphs(data, plotPath)
 
     averages = data[['down', 'up', 'ping']].mean()
 
@@ -51,14 +47,14 @@ def analyzeData(filepath: Path) -> SpeedData:
         averages['ping'],
         startDate,
         endDate,
-        plotFile,
     )
 
 if __name__ == '__main__':
     config = parseConfig()
 
     print(f'Analyzing {config.resultsCsvPath}:')
-    data = analyzeData(config.resultsCsvPath)
+    plotFile = config.resultsCsvPath / 'sample.png'
+    data = analyzeData(config.resultsCsvPath, plotFile)
     pprint(data)
 
-    data.plotFile.unlink()
+    plotFile.unlink()
