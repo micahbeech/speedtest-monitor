@@ -18,37 +18,40 @@ def generateReport(config: Config) -> Path:
 
     data = analyzeData(config.resultsCsvPath, imagePath)
 
-    baseHtml = f'''
-        <table>
-            <tbody><tr>
-                <td>Average download speed:</td>
-                <td>{data.averageDownloadBandwidth:.2f} Mbps</td>
-            </tr>
-            <tr>
-                <td>Average upload speed:</td>
-                <td>{data.averageUploadBandwidth:.2f} Mbps</td>
-            </tr>
-            <tr>
-                <td>Average ping:</td>
-                <td>{data.averagePing:.2f} ms</td>
-            </tr>
-            </tbody>
-        </table>
 
-        <br/>
+    startDate = data.startDate.date()
+    endDate = data.endDate.date()
+
+    header = f'Internet Speed Summary for {startDate}'
+    header += '' if startDate == endDate else f' to {endDate}'
+
+    baseHtml = f'''
+        <div style="font-family: Arial;">
+            <h1>{header}<h1>
+
+            <table>
+                <tbody><tr>
+                    <td>Average download speed:</td>
+                    <td>{data.averageDownloadBandwidth:.2f} Mbps</td>
+                </tr>
+                <tr>
+                    <td>Average upload speed:</td>
+                    <td>{data.averageUploadBandwidth:.2f} Mbps</td>
+                </tr>
+                <tr>
+                    <td>Average ping:</td>
+                    <td>{data.averagePing:.2f} ms</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
         '''
 
     with reportPath.open('w') as file:
         file.write(baseHtml + f'<img src="{imagePath}"/>')
 
     if config.deliveryEmail:
-        startDate = data.startDate.date()
-        endDate = data.endDate.date()
-
-        subject = f'Internet Speed Summary for {startDate}'
-        subject += '' if startDate == endDate else f' to {endDate}'
-
-        gmail.send(config.deliveryEmail, subject, baseHtml, attachments=[imagePath])
+        gmail.send(config.deliveryEmail, header, baseHtml, attachments=[imagePath])
 
     newPath = config.reportDir / f'{config.resultsCsvPath.stem}_{reportId}{config.resultsCsvPath.suffix}'
     config.resultsCsvPath.rename(newPath)
