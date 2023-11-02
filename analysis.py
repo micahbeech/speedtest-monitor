@@ -53,7 +53,7 @@ if __name__ == '__main__':
     config = parseConfig()
 
     print(f'Analyzing {config.resultsCsvPath}:')
-    plotFile = config.resultsCsvPath / 'sample.png'
+    plotFile = config.reportDir / 'sample.png'
     data = analyzeData(config.resultsCsvPath, plotFile)
     pprint(data)
 

@@ -18,7 +18,6 @@ def generateReport(config: Config) -> Path:
 
     data = analyzeData(config.resultsCsvPath, imagePath)
 
-
     startDate = data.startDate.date()
     endDate = data.endDate.date()
 

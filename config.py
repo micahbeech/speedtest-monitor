@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from pprint import pprint
 
-SCRIPT_DIR = Path(__file__).parent
+CONFIG_FILE = Path(__file__).parent / 'config.json'
 
 @dataclass
 class Config:
@@ -12,9 +12,7 @@ class Config:
     reportDir: Path
 
 def parseConfig() -> Config:
-    configFile = SCRIPT_DIR / 'config.json'
-
-    with configFile.open() as file:
+    with CONFIG_FILE.open() as file:
         configDict = json.load(file)
 
     config = Config(
