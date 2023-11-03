@@ -9,6 +9,8 @@ Track your internet speed and visualize the results.
 ### Prerequisites
 1. [Python 3.11+](https://www.python.org/about/gettingstarted/)
 2. [pip](https://pip.pypa.io/en/stable/)
+3. [git](https://git-scm.com/)
+4. [cron](https://man7.org/linux/man-pages/man8/cron.8.html)
 
 ### Automatic Setup (recommended)
 
