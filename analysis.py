@@ -11,9 +11,9 @@ from config import parseConfig
 
 @dataclass
 class SpeedData:
-    averageDownloadBandwidth: float
-    averageUploadBandwidth: float
-    averagePing: float
+    downloadBandwidth: pd.Series
+    uploadBandwidth: pd.Series
+    ping: pd.Series
     startDate: datetime
     endDate: datetime
 
@@ -35,16 +35,16 @@ def analyzeData(csvPath: Path, plotPath: Path) -> SpeedData:
 
     generateGraphs(data, plotPath)
 
-    averages = data[['down', 'up', 'ping']].mean()
+    values = data[['down', 'up', 'ping']].agg(['min', 'mean', 'max'])
 
     dateFormat = '%Y-%m-%dT%H:%M:%SZ'
     startDate = datetime.strptime(data['time'].iloc[0], dateFormat)
     endDate = datetime.strptime(data['time'].iloc[-1], dateFormat)
 
     return SpeedData(
-        averages['down'],
-        averages['up'],
-        averages['ping'],
+        values['down'],
+        values['up'],
+        values['ping'],
         startDate,
         endDate,
     )

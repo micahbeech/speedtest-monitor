@@ -28,19 +28,32 @@ def generateReport(config: Config) -> Path:
         <div style="font-family: Arial;">
             <h1>{header}<h1>
 
-            <table>
-                <tbody><tr>
-                    <td>Average download speed:</td>
-                    <td>{data.averageDownloadBandwidth:.2f} Mbps</td>
-                </tr>
-                <tr>
-                    <td>Average upload speed:</td>
-                    <td>{data.averageUploadBandwidth:.2f} Mbps</td>
-                </tr>
-                <tr>
-                    <td>Average ping:</td>
-                    <td>{data.averagePing:.2f} ms</td>
-                </tr>
+            <table style="text-align: left;">
+                <tbody>
+                    <tr>
+                        <th></th>
+                        <th>Download (Mbps)</th>
+                        <th>Upload (Mbps)</th>
+                        <th>Ping (ms)</th>
+                    </tr>
+                    <tr>
+                        <th>Min</th>
+                        <td>{data.downloadBandwidth['min']:.2f}</td>
+                        <td>{data.uploadBandwidth['min']:.2f}</td>
+                        <td>{data.ping['min']:.2f}</td>
+                    </tr>
+                    <tr>
+                        <th>Average</th>
+                        <td>{data.downloadBandwidth['mean']:.2f}</td>
+                        <td>{data.uploadBandwidth['mean']:.2f}</td>
+                        <td>{data.ping['mean']:.2f}</td>
+                    </tr>
+                    <tr>
+                        <th>Max</th>
+                        <td>{data.downloadBandwidth['max']:.2f}</td>
+                        <td>{data.uploadBandwidth['max']:.2f}</td>
+                        <td>{data.ping['max']:.2f}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
