@@ -102,6 +102,12 @@ def setupEmail() -> str:
         html='<p>Success! You have successfully setup email delivery.</p>',
     )
 
+    # Keep credentials fresh
+    command = f'python {WORKING_DIRECTORY / "gmail.py"}'
+    CRON.remove_all(command=command)
+    job = CRON.new(command=command)
+    job.every(1).day()
+
     return email
 
 def setup():
